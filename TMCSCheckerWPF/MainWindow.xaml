@@ -9,8 +9,7 @@
 
 
     <Grid Loaded="Grid_Loaded" Background="#FF1D1D1D">
-        <ComboBox x:Name="cbType" HorizontalAlignment="Left" Margin="56,158,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
-        <ComboBox x:Name="cbDevices" HorizontalAlignment="Left" Margin="56,252,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
+
         <Border BorderBrush="#FF179AC8" BorderThickness="2" >
             <DockPanel Height="40" LastChildFill="False" VerticalAlignment="Top" Width="auto" Background="Black" Margin="0,0,0,0">
                 <Button Content="X" Height="40" VerticalAlignment="Top" Width="45" HorizontalAlignment="Right" DockPanel.Dock="Right" Foreground="Red" FontWeight="Bold" Click="Button_Click" Background="#FFFF0B0B" BorderBrush="Red"/>
@@ -19,44 +18,74 @@
                 <Label Content="SICE - TMCS Configuration Validator" Height="40" VerticalAlignment="Center" Margin="350 0 0 0" HorizontalAlignment="Center" Width="348" FontWeight="Bold" FontSize="18"/>
             </DockPanel>
         </Border>
-        <Grid x:Name="gridIcons" HorizontalAlignment="Left" Height="426" Margin="364,125,0,0" VerticalAlignment="Top" Width="694" ShowGridLines ="False" Background="#FF3A3A3A" >
-            <Border x:Name="borderGrid" BorderBrush="#FF179AC8" BorderThickness="4" Grid.ColumnSpan="5" Grid.RowSpan= "5" />
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
 
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+        <Label x:Name="txtLog" Content="" Height="40" VerticalAlignment="Top" Margin="22,50,0,0" HorizontalAlignment="Left" Width="552" FontWeight="Bold" FontSize="18" Foreground="#FF17FF00"/>
+        <TextBox x:Name="tbIP" HorizontalAlignment="Left" Height="25" Margin="593,58,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <TextBox x:Name="tbDB" HorizontalAlignment="Left" Height="25" Margin="718,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <TextBox x:Name="tbPass" HorizontalAlignment="Left" Height="25" Margin="843,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="968,58,0,0" VerticalAlignment="Top" Width="90" FontSize="16" Click="btnConnect_Click" Foreground="#FFBABABA"/>
 
-
-
-            </Grid.RowDefinitions>
-
-        </Grid>
-
-        <TextBox x:Name="tbIP" HorizontalAlignment="Left" Height="25" Margin="448,58,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
-        <Label x:Name="lblType" VerticalAlignment="Top" HorizontalAlignment="Center" Height="52" Margin="56,106,797,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Type" RenderTransformOrigin="0.427,2.5" IsEnabled="False" Foreground="#FF54A2FF"/>
-        <Label x:Name="lblDvice" VerticalAlignment="Top" HorizontalAlignment="Center" Height="52" Margin="56,200,797,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Device" IsEnabled="False" Foreground="#FF54A2FF"/>
-        <TextBox x:Name="tbDB" HorizontalAlignment="Left" Height="25" Margin="620,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
-        <TextBox x:Name="tbPass" HorizontalAlignment="Left" Height="25" Margin="788,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="968,58,0,0" VerticalAlignment="Top" Width="90" FontSize="16" Click="btnConnect_Click"/>
-        <Button x:Name="btnExport" Content="Export Config" HorizontalAlignment="Left" Margin="96,331,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnExport_Click"/>
-        <Button x:Name="btnExportImages" Content="Export Visual" HorizontalAlignment="Left" Margin="96,418,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnExportImages_Click"/>
         <ProgressBar x:Name="pgBar" HorizontalAlignment="Left" Height="34" Margin="10,595,0,0" VerticalAlignment="Top" Width="1089" Foreground="#FF0691B0" BorderThickness="1">
             <ProgressBar.Effect>
                 <BlurEffect RenderingBias="Quality" Radius="10"/>
             </ProgressBar.Effect>
         </ProgressBar>
-        <Button x:Name="btnExportImages_Copy" Content="Compare &#xA; Configs" HorizontalAlignment="Left" Margin="96,513,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnExportImages_Click"/>
 
+
+        <TabControl x:Name="tabGeneral" HorizontalAlignment="Left" BorderBrush="DarkBlue" BorderThickness="4" Height="484" VerticalAlignment="Top" Width="1060" Margin="22,90,0,0" Visibility="Visible">
+            <TabItem Header="Icons" Foreground="#FF54A2FF" Style="{StaticResource TabItemStyle}" FontSize="16" FontWeight="Bold">
+                <Grid Background="#FF1D1D1D">
+                    <Label x:Name="lblType" VerticalAlignment="Top" HorizontalAlignment="lEFT" Height="52" Margin="56,20,797,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Type" RenderTransformOrigin="0.427,2.5" IsEnabled="False" Foreground="#FF54A2FF"/>
+                    <Label x:Name="lblDvice" VerticalAlignment="Top" HorizontalAlignment="Left" Height="52" Margin="56,120,797,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Device" IsEnabled="False" Foreground="#FF54A2FF"/>
+                    <ComboBox x:Name="cbType" HorizontalAlignment="Left" Margin="56,70,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
+                    <ComboBox x:Name="cbDevices" HorizontalAlignment="Left" Margin="56,170,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
+                    <Button x:Name="btnExport" Content="Export &#xA;Config" HorizontalAlignment="Left" Margin="96,220,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnExport_Click"/>
+                    <Button x:Name="btnExportImages" Content="Export &#xA; Visual" HorizontalAlignment="Left" Margin="96,300,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnExportImages_Click"/>
+                    <Button x:Name="btnCompare" Content="Compare &#xA; Configs" HorizontalAlignment="Left" Margin="96,370,0,0" VerticalAlignment="Top" Width="146" Height="61" FontSize="20" IsEnabled="False" Click="btnCompare_Click" />
+
+                    <Grid x:Name="gridIcons" HorizontalAlignment="Left" Height="426" Margin="364,8,10,0" VerticalAlignment="Top" Width="694" ShowGridLines ="False" Background="#FF3A3A3A" >
+                        <Border x:Name="borderGrid" BorderBrush="#FF179AC8" BorderThickness="4" Margin="0,0,21,0" Grid.ColumnSpan="5" Grid.RowSpan="5" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+
+
+
+                        </Grid.RowDefinitions>
+
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+            <TabItem  Header="Connections" Foreground="#FF54A2FF" Style="{StaticResource TabItemStyle}" FontSize="16" FontWeight="Bold">
+                <Grid Background="#FF1D1D1D">
+                    <Label x:Name="lblProtocol" VerticalAlignment="Top" HorizontalAlignment="lEFT" Height="52" Margin="23,20,0,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Protocol" RenderTransformOrigin="0.427,2.5" IsEnabled="False" Foreground="#FF54A2FF"/>
+                    <ComboBox x:Name="cbProtocol" HorizontalAlignment="Left" Margin="23,70,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
+                    <Label x:Name="lblTypeConnections" VerticalAlignment="Top" HorizontalAlignment="lEFT" Height="52" Margin="23,110,0,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Type" RenderTransformOrigin="0.427,2.5" IsEnabled="False" Foreground="#FF54A2FF"/>
+                    <ComboBox x:Name="cbTypeConnections" HorizontalAlignment="Left" Margin="23,160,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
+                    <Border x:Name="borderDataGrid" BorderBrush="#FF179AC8" BorderThickness="4" Margin="287,3,8,8" Padding="0 ,0 ,0 ,0"></Border>
+                        <DataGrid x:Name="dgConnections" HorizontalAlignment="Left" Height="428" Margin="289,5,0,0" VerticalAlignment="Top" Width="749" HorizontalGridLinesBrush="#FF00F3FF" VerticalGridLinesBrush="#FF00FFF3" ColumnHeaderStyle="{DynamicResource ColumnHeaderStyle1}" RowBackground="#FF303030" IsReadOnly="True" Background="Black" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
+                                <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 
 </Window>

@@ -100,6 +100,9 @@ namespace TMCSCheckerWPF
                 lblProtocol.IsEnabled = enable;
                 lblTypeConnections.IsEnabled = enable;
                 btnExportConfig.IsEnabled = enable;
+                tbIP.IsEnabled = !enable;
+                tbDB.IsEnabled = !enable;
+                tbPass.IsEnabled = !enable;
 
                 if (enable)
                 {
@@ -1114,7 +1117,7 @@ namespace TMCSCheckerWPF
                             indexCols++;
                         }
                         //writingString += "," + reader.GetString(0);
-                        InsertImage(worksheetPart.Worksheet, (long)(indexCols * 20 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)9144*96 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
+                        InsertImage(worksheetPart.Worksheet, (long)(indexCols * 20 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)9144*100 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
 
                         // Cell c = new Cell() { CellReference = arrayColumsExcel[indexCols] + indexRow, CellValue = new CellValue(reader.GetString(0).ToString()), DataType = new EnumValue<CellValues>(CellValues.String) };
                         // row.Append(c);

@@ -19,10 +19,11 @@
             </DockPanel>
         </Border>
 
-        <Label x:Name="txtLog" Content="" Height="40" VerticalAlignment="Top" Margin="22,50,0,0" HorizontalAlignment="Left" Width="552" FontWeight="Bold" FontSize="18" Foreground="#FF17FF00"/>
-        <TextBox x:Name="tbIP" HorizontalAlignment="Left" Height="25" Margin="593,58,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
-        <TextBox x:Name="tbDB" HorizontalAlignment="Left" Height="25" Margin="718,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
-        <TextBox x:Name="tbPass" HorizontalAlignment="Left" Height="25" Margin="843,58,0,0" TextWrapping="Wrap" Text="WGTCONF" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <Label x:Name="txtLog" Content="" Height="40" VerticalAlignment="Top" Margin="22,50,0,0" HorizontalAlignment="Left" Width="368" FontWeight="Bold" FontSize="18" Foreground="#FF17FF00"/>
+        <Label Content="Database details:" Height="40" VerticalAlignment="Center" Margin="427,55,516,544" HorizontalAlignment="Center" Width="166" FontWeight="Bold" FontSize="18"/>
+        <TextBox x:Name="tbIP" HorizontalAlignment="Left" Height="25" Margin="593,58,0,0" TextWrapping="Wrap" Text="IP" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <TextBox x:Name="tbDB" HorizontalAlignment="Left" Height="25" Margin="718,58,0,0" TextWrapping="Wrap" Text="USER" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
+        <TextBox x:Name="tbPass" HorizontalAlignment="Left" Height="25" Margin="843,58,0,0" TextWrapping="Wrap" Text="PASSWORD" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16"/>
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="968,58,0,0" VerticalAlignment="Top" Width="90" FontSize="16" Click="btnConnect_Click" Foreground="#FFBABABA"/>
 
         <ProgressBar x:Name="pgBar" HorizontalAlignment="Left" Height="34" Margin="10,595,0,0" VerticalAlignment="Top" Width="1089" Foreground="#FF0691B0" BorderThickness="1">

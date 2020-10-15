@@ -7,11 +7,14 @@
         mc:Ignorable="d"
         Title="ComparisonIcons" Height="1000" Width="1700" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown_1">
     <Grid Background="#FF1D1D1D">
-        <DockPanel Height="40" LastChildFill="False" VerticalAlignment="Top" Width="auto" Background="Black" Margin="0,0,0,0">
-            <Button Name="btnClose" Content="X" Height="40" VerticalAlignment="Top" Width="45" HorizontalAlignment="Right" DockPanel.Dock="Right" Foreground="Red" FontWeight="Bold" Click="Button_Click" Background="#FFFF0B0B" BorderBrush="Red"/>
-            <Image Height="40" VerticalAlignment="Top" Width="54" Source="SICELOGO.png"/>
-            <Label Content="SICE - TMCS Configuration" Height="40" VerticalAlignment="Center" Margin="675 0 0 0" HorizontalAlignment="Center" Width="348" FontWeight="Bold" FontSize="18"/>
-        </DockPanel>
+        <Border BorderBrush="#FF179AC8" BorderThickness="2" >
+
+            <DockPanel Height="40" LastChildFill="False" VerticalAlignment="Top" Width="auto" Background="Black" Margin="0,0,0,0">
+                <Button Name="btnClose" Content="X" Height="40" VerticalAlignment="Top" Width="45" HorizontalAlignment="Right" DockPanel.Dock="Right" Foreground="Red" FontWeight="Bold" Click="Button_Click" Background="#FFFF0B0B" BorderBrush="Red"/>
+                <Image Height="40" VerticalAlignment="Top" Width="54" Source="SICELOGO.png"/>
+                <Label Content="SICE - TMCS Configuration" Height="40" VerticalAlignment="Center" Margin="675 0 0 0" HorizontalAlignment="Center" Width="348" FontWeight="Bold" FontSize="18"/>
+            </DockPanel>
+        </Border>
 
         <DataGrid x:Name="dgConnections" HorizontalAlignment="Left" Height="935" Margin="33,55,0,0" VerticalAlignment="Top" Width="1631" HorizontalGridLinesBrush="#FF00F3FF" VerticalGridLinesBrush="#FF00FFF3" ColumnHeaderStyle="{DynamicResource ColumnHeaderStyle1}" RowBackground="#FF303030" IsReadOnly="True" Background="Black" AutoGenerateColumns="False">
       

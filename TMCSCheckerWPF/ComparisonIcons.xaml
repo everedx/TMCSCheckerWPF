@@ -16,9 +16,9 @@
 
 
         </Border>
-        <Button x:Name="btnLoadDB" Content="..." HorizontalAlignment="Left" Margin="771,52,0,0" VerticalAlignment="Top" Width="33" Click="ImportDatabaseItems"/>
-        <Rectangle Fill="#FF343438" HorizontalAlignment="Left" Height="27" Margin="616,87,0,0" Stroke="Black" VerticalAlignment="Top" Width="201"/>
-        <Label Content="Database Export" HorizontalAlignment="Left" Margin="645,54,0,0" VerticalAlignment="Top" Width="141" Foreground="#FF00FFF3"/>
+        <Button x:Name="btnLoadDB" Content="..." HorizontalAlignment="Left" Margin="760,51,0,0" VerticalAlignment="Top" Width="33" Click="ImportDatabaseItems"/>
+        <Rectangle Fill="#FF343438" HorizontalAlignment="Left" Height="27" Margin="592,87,0,0" Stroke="Black" VerticalAlignment="Top" Width="201"/>
+        <Label Content="Database Export" HorizontalAlignment="Left" Margin="619,54,0,0" VerticalAlignment="Top" Width="121" Foreground="#FF00FFF3"/>
         <Button x:Name="btnLoadDoc" Content="..." HorizontalAlignment="Left" Margin="44,51,0,0" VerticalAlignment="Top" Width="33" Click="ImportDocumentationItems"/>
         <Rectangle Fill="#FF343438" HorizontalAlignment="Left" Height="27" Margin="44,87,0,0" Stroke="Black" VerticalAlignment="Top" Width="210"/>
         <Label Content="Documentation" HorizontalAlignment="Left" Margin="113,54,0,0" VerticalAlignment="Top" Width="141" Foreground="#FF00FFF3"/>
@@ -64,8 +64,8 @@
         </ProgressBar>
         <Button x:Name="btnCompare" Content="Compare" HorizontalAlignment="Left" Margin="333,51,0,0" VerticalAlignment="Top" Width="157" Foreground="#FF00F3FF" IsEnabled="False" Click="btnCompare_Click"/>
         <Button x:Name="btnExport" Content="Export" HorizontalAlignment="Left" Margin="333,86,0,0" VerticalAlignment="Top" Width="157" Foreground="#FF00F3FF" IsEnabled="False" Click="btnExport_Click"/>
-        <Border BorderBrush="{x:Null}" Margin="616,94,23,285">
-            <TextBlock Name="textDBTitle" Text="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="201" Height="16" Foreground="Lime" TextAlignment="Center"/>
+        <Border BorderBrush="{x:Null}" Margin="592,94,47,285">
+            <TextBlock Name="textDBTitle" Text="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="181" Height="16" Foreground="Lime" TextAlignment="Center" Margin="10,0,0,0"/>
         </Border>
         <Border BorderBrush="{x:Null}" Margin="44,94,595,285">
             <TextBlock Name="textDocTitle" Text="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="201" Height="16" Foreground="Lime" TextAlignment="Center"/>

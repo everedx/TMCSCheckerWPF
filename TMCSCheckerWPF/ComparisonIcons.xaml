@@ -9,7 +9,7 @@
     <Grid Background="#FF1D1D1D">
         <Border BorderBrush="#FF179AC8" BorderThickness="2" >
             <DockPanel Height="40" LastChildFill="False" VerticalAlignment="Top" Width="auto" Background="Black" Margin="0,0,0,0">
-                <Button Content="X" Height="40" VerticalAlignment="Top" Width="45" HorizontalAlignment="Right" DockPanel.Dock="Right" Foreground="Red" FontWeight="Bold" Click="Button_Click" Background="#FFFF0B0B" BorderBrush="Red"/>
+                <Button Name="btnClose" Content="X" Height="40" VerticalAlignment="Top" Width="45" HorizontalAlignment="Right" DockPanel.Dock="Right" Foreground="Red" FontWeight="Bold" Click="Button_Click" Background="#FFFF0B0B" BorderBrush="Red"/>
                 <Image Height="40" VerticalAlignment="Top" Width="54" Source="SICELOGO.png"/>
                 <Label Content="SICE - TMCS Validation" Height="40" VerticalAlignment="Center" Margin="250 0 0 0" HorizontalAlignment="Center" Width="348" FontWeight="Bold" FontSize="18"/>
             </DockPanel>
@@ -63,7 +63,7 @@
             </ProgressBar.Effect>
         </ProgressBar>
         <Button x:Name="btnCompare" Content="Compare" HorizontalAlignment="Left" Margin="333,51,0,0" VerticalAlignment="Top" Width="157" Foreground="#FF00F3FF" IsEnabled="False" Click="btnCompare_Click"/>
-        <Button x:Name="btnExport" Content="Export" HorizontalAlignment="Left" Margin="333,86,0,0" VerticalAlignment="Top" Width="157" Foreground="#FF00F3FF" IsEnabled="False"/>
+        <Button x:Name="btnExport" Content="Export" HorizontalAlignment="Left" Margin="333,86,0,0" VerticalAlignment="Top" Width="157" Foreground="#FF00F3FF" IsEnabled="False" Click="btnExport_Click"/>
         <Border BorderBrush="{x:Null}" Margin="616,94,23,285">
             <TextBlock Name="textDBTitle" Text="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="201" Height="16" Foreground="Lime" TextAlignment="Center"/>
         </Border>

@@ -75,15 +75,18 @@
                     <Label x:Name="lblTypeConnections" VerticalAlignment="Top" HorizontalAlignment="lEFT" Height="52" Margin="23,110,0,0"  Width="248" FontSize="25"  FontWeight="Bold" Content="Type" RenderTransformOrigin="0.427,2.5" IsEnabled="False" Foreground="#FF54A2FF"/>
                     <ComboBox x:Name="cbTypeConnections" HorizontalAlignment="Left" Margin="23,160,0,0" VerticalAlignment="Top" Width="248" Height="26" BorderBrush="White" IsEnabled="False"/>
                     <Border x:Name="borderDataGrid" BorderBrush="#FF179AC8" BorderThickness="4" Margin="287,3,8,8" Padding="0 ,0 ,0 ,0"></Border>
-                        <DataGrid x:Name="dgConnections" HorizontalAlignment="Left" Height="428" Margin="289,5,0,0" VerticalAlignment="Top" Width="749" HorizontalGridLinesBrush="#FF00F3FF" VerticalGridLinesBrush="#FF00FFF3" ColumnHeaderStyle="{DynamicResource ColumnHeaderStyle1}" RowBackground="#FF303030" IsReadOnly="True" Background="Black" AutoGenerateColumns="False">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
-                                <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
-                            </DataGrid.Columns>
+                    <DataGrid x:Name="dgConnections" HorizontalAlignment="Left" Height="428" Margin="289,5,0,0" VerticalAlignment="Top" Width="749" HorizontalGridLinesBrush="#FF00F3FF" VerticalGridLinesBrush="#FF00FFF3" ColumnHeaderStyle="{DynamicResource ColumnHeaderStyle1}" RowBackground="#FF303030" IsReadOnly="True" Background="Black" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
+                            <DataGridTextColumn Header="Device" Width="*" Binding="{Binding Device}" />
+                        </DataGrid.Columns>
 
-                        </DataGrid>
-                    
+                    </DataGrid>
+                    <Button x:Name="btnExportConfig" Content="Export" HorizontalAlignment="Left" Margin="66,222,0,0" VerticalAlignment="Top" Width="146" Height="60" FontSize="20" IsEnabled="False" Click="btnExportConf_Click"/>
+                    <Button x:Name="btnExpand" Content="&lt;-" HorizontalAlignment="Left" Margin="241,403,0,0" VerticalAlignment="Top" Width="43" FontSize="20" Click="btnExpand_Click" Foreground="#FFBABABA" FontFamily="Segoe UI Symbol" FontWeight="Bold" IsEnabled="False"/>
+
                 </Grid>
+
             </TabItem>
         </TabControl>
     </Grid>

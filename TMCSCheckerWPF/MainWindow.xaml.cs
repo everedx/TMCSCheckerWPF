@@ -1,8 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using iText.StyledXmlParser.Node;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -94,10 +94,12 @@ namespace TMCSCheckerWPF
                 btnExport.IsEnabled = enable;
                 btnExportImages.IsEnabled = enable;
                 btnCompare.IsEnabled = enable;
+                btnExpand.IsEnabled = enable;
                 cbTypeConnections.IsEnabled = enable;
                 cbProtocol.IsEnabled = enable;
                 lblProtocol.IsEnabled = enable;
                 lblTypeConnections.IsEnabled = enable;
+                btnExportConfig.IsEnabled = enable;
 
                 if (enable)
                 {
@@ -162,6 +164,7 @@ namespace TMCSCheckerWPF
                 typesConnectionList.Add(reader.GetString(0));
                 //MessageBox.Show(reader.GetString(0));
             }
+            typesConnectionList.Sort();
             reader.Close();
             cbTypeConnections.ItemsSource = typesConnectionList;
             cbTypeConnections.SelectionChanged += LoadConnections;
@@ -178,7 +181,10 @@ namespace TMCSCheckerWPF
                     break;
 
                 case "TSI_SP_003":
-                    LoadRTAConnections();
+                    if (cbTypeConnections.SelectedItem.ToString().EndsWith("VMS_C"))
+                        LoadRTACompositeConnections();
+                    else
+                        LoadRTAConnections();
                     break;
 
                 default:
@@ -351,6 +357,151 @@ namespace TMCSCheckerWPF
             dgConnections.ItemsSource = RTAConnections;
         }
 
+        private void LoadRTACompositeConnections()
+        {
+
+            List<RTACompositeConnection> RTAConnections = new List<RTACompositeConnection>();
+            //NON VMS_C devices
+
+            string queryString = @"SELECT DISTINCT VCE.IDENT AS DEVICE, 
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'NUMLINEAS') AS NUM_LINES,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'NUMCARACTERES') AS NUM_CHARS,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'BEACON_TYPE') AS BEACON_TYPE,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'GROUP_ID') AS GROUP_ID,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'MULTIPUNTO') AS ADRESS_ID,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'SIGN_ID') AS SIGN_ID,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'IP1') AS MONO_IP,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PUERTO1') AS MONO_PORT,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PASSWORD') AS MONO_PASSWORD,
+			(SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'IP1') AS PICTO_IP,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'PUERTO1') AS PICTO_PORT,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'PASSWORD') AS PICTO_PASSWORD
+            FROM VIEW_CARACTERISTICAS_EQUIPOS VCE, CONF_TIPOS_EQUIPOS CTE
+            WHERE VCE.NOMBRE_TIPOEQUIPO = CTE.NOMBRE_TIPOEQUIPO
+            AND CTE.ID_TEQUIP_PRINCIPAL = 'CPMV'
+            AND VCE.IDENT IS NOT NULL
+            AND VCE.NOMBRE_TIPOEQUIPO = '" + cbTypeConnections.SelectedItem.ToString() + "'";
+
+            SqlCommand command = new SqlCommand(queryString, connection);
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                RTACompositeConnection rtaCon = new RTACompositeConnection();
+                if (!reader.IsDBNull(0))
+                    rtaCon.Device = reader.GetString(0);
+                if (!reader.IsDBNull(1))
+                    rtaCon.NumLines = reader.GetString(1);
+                if (!reader.IsDBNull(2))
+                    rtaCon.NumCharacters = reader.GetString(2);
+                if (!reader.IsDBNull(3))
+                    rtaCon.Beacon_Type = reader.GetString(3);
+                if (!reader.IsDBNull(4))
+                    rtaCon.GroupId = reader.GetString(4);
+                if (!reader.IsDBNull(5))
+                    rtaCon.AdressId = reader.GetString(5);
+                if (!reader.IsDBNull(6))
+                    rtaCon.SignID = reader.GetString(6);
+                if (!reader.IsDBNull(7))
+                    rtaCon.MonoIP = reader.GetString(7);
+                if (!reader.IsDBNull(8))
+                    rtaCon.MonoPort = reader.GetString(8);
+                if (!reader.IsDBNull(9))
+                    rtaCon.MonoRTAPass = reader.GetString(9);
+                if (!reader.IsDBNull(7))
+                    rtaCon.PictoIP = reader.GetString(10);
+                if (!reader.IsDBNull(8))
+                    rtaCon.PictoPort = reader.GetString(11);
+                if (!reader.IsDBNull(9))
+                    rtaCon.PictoRTAPass = reader.GetString(12);
+
+                if (string.IsNullOrEmpty(rtaCon.Beacon_Type) || rtaCon.Beacon_Type == "none")
+                    rtaCon.Beacon_Type = "N";
+                else
+                    rtaCon.Beacon_Type = "Y";
+                RTAConnections.Add(rtaCon);
+            }
+            reader.Close();
+            //ClearGrid();
+
+            dgConnections.Columns[0].Width = new DataGridLength(2, DataGridLengthUnitType.Star);
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Number of lines",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("NumLines")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Number of chars",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("NumCharacters")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Beacons",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("Beacon_Type")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Group ID",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("GroupId")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Adress ID",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("AdressId")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Sign ID",
+                Width = new DataGridLength(0.3, DataGridLengthUnitType.Star),
+                Binding = new Binding("SignID")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Mono IP",
+                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                Binding = new Binding("MonoIP")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Mono Port",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("MonoPort")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Mono Password",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("MonoRTAPass")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Picto IP",
+                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                Binding = new Binding("PictoIP")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Picto Port",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("PictoPort")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Picto Password",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("PictoRTAPass")
+            });
+
+            dgConnections.AutoGenerateColumns = false;
+            dgConnections.ItemsSource = RTAConnections;
+        }
+
+
         private void LoadGenetecConnections()
         {
 
@@ -507,16 +658,28 @@ namespace TMCSCheckerWPF
             btnExport.IsEnabled = false;
             btnExportImages.IsEnabled = false;
             btnCompare.IsEnabled = false;
+            btnExportConfig.IsEnabled = false;
 
             Thread exportThread = new Thread(new ParameterizedThreadStart(GenerateExportConfig));
             exportThread.Start(cbType.SelectedItem.ToString());
- 
-
-
-          
-
- 
         }
+
+        private void btnExportConf_Click(object sender, RoutedEventArgs e)
+        {
+            pgBar.Value = 0;
+            lblDvice.IsEnabled = false;
+            lblType.IsEnabled = false;
+            cbDevices.IsEnabled = false;
+            cbType.IsEnabled = false;
+            btnExport.IsEnabled = false;
+            btnExportImages.IsEnabled = false;
+            btnCompare.IsEnabled = false;
+            btnExportConfig.IsEnabled = false;
+
+            Thread exportThread = new Thread(new ParameterizedThreadStart(GenerateExportConfiguration));
+            exportThread.Start(cbTypeConnections.SelectedItem.ToString());
+        }
+
 
         private void btnExportImages_Click(object sender, RoutedEventArgs e)
         {
@@ -527,6 +690,7 @@ namespace TMCSCheckerWPF
             btnExport.IsEnabled = false;
             btnExportImages.IsEnabled = false;
             btnCompare.IsEnabled = false;
+            btnExportConfig.IsEnabled = false;
 
             Thread exportThread = new Thread(new ParameterizedThreadStart(GenerateExportConfigImages));
             exportThread.Start(cbType.SelectedItem.ToString());
@@ -697,6 +861,100 @@ namespace TMCSCheckerWPF
         }
 
 
+        private void GenerateExportConfiguration(object obj)
+        {
+            int indexRow = 1;
+            int indexCols = 0;
+
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(AppDomain.CurrentDomain.BaseDirectory + "\\RESULTS_CONFIGURATION_" + obj.ToString() + ".xlsx", SpreadsheetDocumentType.Workbook))
+            {
+                // Add a WorkbookPart to the document.
+                WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
+                workbookpart.Workbook = new Workbook();
+
+                // Add a WorksheetPart to the WorkbookPart.
+                WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+                SheetData sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                // Add Sheets to the Workbook.
+                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.
+                    AppendChild<Sheets>(new Sheets());
+
+                // Append a new worksheet and associate it with the workbook.
+                Sheet sheet = new Sheet()
+                {
+                    Id = spreadsheetDocument.WorkbookPart.
+                    GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = obj.ToString()
+                };
+
+                
+
+                //var path = AppDomain.CurrentDomain.BaseDirectory + @"\RESULTS" + cbType.SelectedItem.ToString() + ".csv";
+                // StreamWriter sw = new StreamWriter(path);
+                indexRow = 0;
+                foreach (Connection item in dgConnections.ItemsSource)
+                {
+                    if (indexRow == 0)
+                    {
+                        Row rowHeader = new Row() { RowIndex = (uint)indexRow };
+                        for (int i = 0; i < dgConnections.Columns.Count; i++)
+                        {
+                            Cell c = new Cell() { CellReference = arrayColumsExcel[i] + (indexRow + 1), CellValue = new CellValue(item.headers[i]), DataType = new EnumValue<CellValues>(CellValues.String) };
+                            rowHeader.Append(c);
+                        }
+                        sheetData.Append(rowHeader);
+                    }
+                    
+                    indexCols = 0;
+
+
+                    Row row = new Row() { RowIndex = 0 };
+
+                    foreach (DataGridColumn col in dgConnections.Columns)
+                    {
+                        Cell c;
+                        string content = item.GetItem(indexCols);
+                        if (string.IsNullOrEmpty(content))
+                            content = "NULL";
+                        bool isNumeric = int.TryParse(content, out int n);
+                        if(!isNumeric)
+                            c= new Cell() { CellReference = arrayColumsExcel[indexCols] + (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.String) };
+                        else
+                            c = new Cell() { CellReference = arrayColumsExcel[indexCols] +  (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.Number) };
+                        row.Append(c);
+                        indexCols++;
+                        
+                        
+
+                    }
+                    sheetData.Append(row);
+                    indexRow++;
+
+                    this.Dispatcher.Invoke(
+                    new UpdatePgBar(this.updatePgBar),
+                    new object[] { (double.Parse(indexRow.ToString()) / double.Parse(dgConnections.Items.Count.ToString())) * 100 }
+                     );
+
+      
+                }
+
+                sheets.Append(sheet);
+
+                workbookpart.Workbook.Save();
+
+                // Close the document.
+                spreadsheetDocument.Close();
+
+                this.Dispatcher.Invoke(
+                    new FinishExport(FinishThreadExport),
+                    new object[] { }
+                     );
+            }
+        }
+
 
 
         private void GenerateExportConfig(object obj)
@@ -856,7 +1114,7 @@ namespace TMCSCheckerWPF
                             indexCols++;
                         }
                         //writingString += "," + reader.GetString(0);
-                        InsertImage(worksheetPart.Worksheet, (long)(indexCols * 20 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)9144*100 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
+                        InsertImage(worksheetPart.Worksheet, (long)(indexCols * 20 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)9144*96 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
 
                         // Cell c = new Cell() { CellReference = arrayColumsExcel[indexCols] + indexRow, CellValue = new CellValue(reader.GetString(0).ToString()), DataType = new EnumValue<CellValues>(CellValues.String) };
                         // row.Append(c);
@@ -914,6 +1172,7 @@ namespace TMCSCheckerWPF
             btnExport.IsEnabled = true;
             btnExportImages.IsEnabled = true;
             btnCompare.IsEnabled = true;
+            btnExportConfig.IsEnabled = true;
             pgBar.Value = 0;
         }
 
@@ -988,6 +1247,14 @@ namespace TMCSCheckerWPF
             comp.ShowDialog();
         }
 
+        private void btnExpand_Click(object sender, RoutedEventArgs e)
+        {
+            ExpandedGridWindow window = new ExpandedGridWindow(dgConnections);
+            window.ShowDialog();
+        }
+
+
+
     }
 
 
@@ -1013,16 +1280,56 @@ namespace TMCSCheckerWPF
         }
     }
 
-    public class GenetecConnection
+    public class GenetecConnection : Connection
     {
         public string Device { get; set; }
         public string GenID { get; set; }
         public string CitiID { get; set; }
+
+        public GenetecConnection()
+        {
+            headers = new List<string>();
+            headers.Add("Device");
+            headers.Add("Genetec ID");
+            headers.Add("Citilog ID");
+        }
+
+        public override string GetItem(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Device;
+                case 1:
+                    return GenID;
+                case 2:
+                    return CitiID;
+            }
+
+            return null;
+        }
+
     }
 
 
-    public class RTAConnection
+    public class RTAConnection : Connection
     {
+
+        public RTAConnection()
+        {
+            headers = new List<string>();
+            headers.Add("Device");
+            headers.Add("Number of Lines");
+            headers.Add("Number of Characters");
+            headers.Add("Beacons");
+            headers.Add("GroupId");
+            headers.Add("AdressId");
+            headers.Add("SignID");
+            headers.Add("IP");
+            headers.Add("Port");
+            headers.Add("RTAPass");
+        }
+
         public string Device { get; set; }
         public string NumLines { get; set; }
         public string NumCharacters { get; set; }
@@ -1033,13 +1340,146 @@ namespace TMCSCheckerWPF
         public string IP { get; set; }
         public string Port { get; set; }
         public string RTAPass { get; set; }
+
+        public override string GetItem(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Device;
+                case 1:
+                    return NumLines;
+                case 2:
+                    return NumCharacters;
+                case 3:
+                    return Beacon_Type;
+                case 4:
+                    return GroupId;
+                case 5:
+                    return AdressId;
+                case 6:
+                    return SignID;
+                case 7:
+                    return IP;
+                case 8:
+                    return Port;
+                case 9:
+                    return RTAPass;
+            }
+
+            return null;
+        }
+
     }
 
-    public class IPChannelConnection
+    public class RTACompositeConnection : Connection
     {
+
+        public RTACompositeConnection()
+        {
+            headers = new List<string>();
+            headers.Add("Device");
+            headers.Add("Number of Lines");
+            headers.Add("Number of Characters");
+            headers.Add("Beacons");
+            headers.Add("GroupId");
+            headers.Add("AdressId");
+            headers.Add("SignID");
+            headers.Add("MonoIP");
+            headers.Add("MonoPort");
+            headers.Add("MonoRTAPass");
+            headers.Add("PictoIP");
+            headers.Add("PictoPort");
+            headers.Add("PictoRTAPass");
+        }
+
+        public string Device { get; set; }
+        public string NumLines { get; set; }
+        public string NumCharacters { get; set; }
+        public string Beacon_Type { get; set; }
+        public string GroupId { get; set; }
+        public string AdressId { get; set; }
+        public string SignID { get; set; }
+        public string MonoIP { get; set; }
+        public string MonoPort { get; set; }
+        public string MonoRTAPass { get; set; }
+        public string PictoIP { get; set; }
+        public string PictoPort { get; set; }
+        public string PictoRTAPass { get; set; }
+
+        public override string GetItem(int index)
+        {
+
+            switch (index)
+            {
+                case 0:
+                    return Device;
+                case 1:
+                    return NumLines;
+                case 2:
+                    return NumCharacters;
+                case 3:
+                    return Beacon_Type;
+                case 4:
+                    return GroupId;
+                case 5:
+                    return AdressId;
+                case 6:
+                    return SignID;
+                case 7:
+                    return MonoIP;
+                case 8:
+                    return MonoPort;
+                case 9:
+                    return MonoRTAPass;
+                case 10:
+                    return PictoIP;
+                case 11:
+                    return PictoPort;
+                case 12:
+                    return PictoRTAPass;
+            }
+
+            return null;
+        }
+
+    }
+
+    public class IPChannelConnection:Connection
+    {
+        public IPChannelConnection()
+        {
+            headers = new List<string>();
+            headers.Add("Device");
+            headers.Add("IP");
+            headers.Add("Port");
+        }
+
         public string Device { get; set; }
         public string IP { get; set; }
         public string Port { get; set; }
+
+        public override string GetItem(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Device;
+                case 1:
+                    return IP;                  
+                case 2:
+                    return Port;
+            }
+
+            return null;
+        }
+    }
+
+    public class Connection
+    {
+        public List<string> headers;
+
+        public virtual string GetItem(int index) { return null; }
     }
 
 }

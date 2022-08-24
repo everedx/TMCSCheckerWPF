@@ -340,7 +340,11 @@ namespace TMCSCheckerWPF
             for (int i = 0; i < documentationImportList.Count; i++)
             {
                 DeviceIconGroup databaseItem = databaseImportList.Find(x=>x.deviceName.Equals(documentationImportList[i].deviceName));
-                ComparedObject co = new ComparedObject() { DeviceDoc = documentationImportList[i].deviceName, DeviceDB = databaseItem.deviceName,Result=documentationImportList[i].IsEqualTo(databaseItem) };
+                ComparedObject co;
+                if (databaseItem != null)
+                    co = new ComparedObject() { DeviceDoc = documentationImportList[i].deviceName, DeviceDB = databaseItem.deviceName,Result=documentationImportList[i].IsEqualTo(databaseItem) };
+                else
+                    co = new ComparedObject() { DeviceDoc = documentationImportList[i].deviceName, DeviceDB = "MISSING", Result = false};
                 objectComparisonList.Add(co);
             }
             dgConnections.ItemsSource = objectComparisonList;

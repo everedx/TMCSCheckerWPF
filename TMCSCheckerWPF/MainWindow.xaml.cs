@@ -60,7 +60,7 @@ namespace TMCSCheckerWPF
             devicesList = new List<string>();
             protocolList = new List<string>();
             typesConnectionList = new List<string>();
-            imagesDir = Environment.GetEnvironmentVariable("ITS_CLIENT_PATH")+ @"\Resources\Images\ImagesMap\";
+            imagesDir = Environment.GetEnvironmentVariable("ITS_CLIENT_PATH") + @"\Resources\Images\ImagesMap\";
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -86,7 +86,7 @@ namespace TMCSCheckerWPF
             }
             finally
             {
-              
+
                 lblDvice.IsEnabled = enable;
                 lblType.IsEnabled = enable;
                 cbDevices.IsEnabled = enable;
@@ -109,11 +109,11 @@ namespace TMCSCheckerWPF
                     LoadTypes();
                     LoadProtocols();
                     btnConnect.IsEnabled = false;
-                    
+
                 }
             }
 
-            
+
 
 
         }
@@ -124,7 +124,7 @@ namespace TMCSCheckerWPF
             string queryString = "SELECT NOMBRE_TIPOEQUIPO FROM CONF_TIPOS_EQUIPOS WHERE ID_TEQUIP_PRINCIPAL = 'CPMV'";
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
-            
+
             while (reader.Read())
             {
                 typesList.Add(reader.GetString(0));
@@ -134,7 +134,7 @@ namespace TMCSCheckerWPF
             cbType.ItemsSource = typesList;
             cbType.SelectionChanged += LoadDevices;
             cbType.SelectedIndex = 0;
-            
+
         }
 
         private void LoadProtocols()
@@ -158,7 +158,7 @@ namespace TMCSCheckerWPF
         {
             cbTypeConnections.SelectionChanged -= LoadConnections;
             cbTypeConnections.ItemsSource = null;
-            string queryString = "SELECT DISTINCT NOMBRE_TIPOEQUIPO FROM CONF_EQUIPOS WHERE PROTOCOLO ='"+ cbProtocol.SelectedItem.ToString() +"' AND NOMBRE_TIPOEQUIPO NOT IN ('CANAL','WGT_SC','CML_SPC_CNTLR') AND NOMBRE_TIPOEQUIPO NOT LIKE '%GROUP%'";
+            string queryString = "SELECT DISTINCT NOMBRE_TIPOEQUIPO FROM CONF_EQUIPOS WHERE PROTOCOLO ='" + cbProtocol.SelectedItem.ToString() + "' AND NOMBRE_TIPOEQUIPO NOT IN ('CANAL','WGT_SC','CML_SPC_CNTLR') AND NOMBRE_TIPOEQUIPO NOT LIKE '%GROUP%'";
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
             typesConnectionList.Clear();
@@ -206,7 +206,7 @@ namespace TMCSCheckerWPF
             WHERE VCE.NOMBRE_TIPOEQUIPO = CTE.NOMBRE_TIPOEQUIPO
             AND CE.IDENT = VCE.IDENT
             AND VCE.IDENT IS NOT NULL
-            AND VCE.NOMBRE_TIPOEQUIPO = '" + cbTypeConnections.SelectedItem.ToString() + "' AND CE.PROTOCOLO = '"+ cbProtocol.SelectedItem.ToString() + "'";
+            AND VCE.NOMBRE_TIPOEQUIPO = '" + cbTypeConnections.SelectedItem.ToString() + "' AND CE.PROTOCOLO = '" + cbProtocol.SelectedItem.ToString() + "'";
 
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
@@ -258,19 +258,20 @@ namespace TMCSCheckerWPF
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS CAR WHERE CAR.IDENT = VCE.IDENT AND NOMBRE_CARACT = 'SIGN_ID') AS SIGN_ID,
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'IP1') AS IP_CHANNEL,
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PUERTO1') AS PORT_CHANNEL,
-            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PASSWORD') AS PASSWORD_RTA
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PASSWORD') AS PASSWORD_RTA,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'SEED') AS SEED_RTA
             FROM VIEW_CARACTERISTICAS_EQUIPOS VCE, CONF_TIPOS_EQUIPOS CTE
             WHERE VCE.NOMBRE_TIPOEQUIPO = CTE.NOMBRE_TIPOEQUIPO
             AND CTE.ID_TEQUIP_PRINCIPAL = 'CPMV'
             AND VCE.IDENT IS NOT NULL
-            AND VCE.NOMBRE_TIPOEQUIPO = '" + cbTypeConnections.SelectedItem.ToString()+"'";
+            AND VCE.NOMBRE_TIPOEQUIPO = '" + cbTypeConnections.SelectedItem.ToString() + "'";
 
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
                 RTAConnection rtaCon = new RTAConnection();
-                if(!reader.IsDBNull(0))
+                if (!reader.IsDBNull(0))
                     rtaCon.Device = reader.GetString(0);
                 if (!reader.IsDBNull(1))
                     rtaCon.NumLines = reader.GetString(1);
@@ -290,6 +291,8 @@ namespace TMCSCheckerWPF
                     rtaCon.Port = reader.GetString(8);
                 if (!reader.IsDBNull(9))
                     rtaCon.RTAPass = reader.GetString(9);
+                if (!reader.IsDBNull(10))
+                    rtaCon.RTASeed = reader.GetString(10);
 
                 if (string.IsNullOrEmpty(rtaCon.Beacon_Type) || rtaCon.Beacon_Type == "none")
                     rtaCon.Beacon_Type = "N";
@@ -355,6 +358,12 @@ namespace TMCSCheckerWPF
                 Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
                 Binding = new Binding("RTAPass")
             });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Seed",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("RTASeed")
+            });
 
             dgConnections.AutoGenerateColumns = false;
             dgConnections.ItemsSource = RTAConnections;
@@ -376,9 +385,11 @@ namespace TMCSCheckerWPF
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'IP1') AS MONO_IP,
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PUERTO1') AS MONO_PORT,
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'PASSWORD') AS MONO_PASSWORD,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT top(1) CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT) AND NOMBRE_CARACT = 'SEED') AS MONO_SEED,
 			(SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'IP1') AS PICTO_IP,
             (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'PUERTO1') AS PICTO_PORT,
-            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'PASSWORD') AS PICTO_PASSWORD
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'PASSWORD') AS PICTO_PASSWORD,
+            (SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS WHERE IDENT = (SELECT CS.IDENT AS CHANNEL FROM CONF_SUBEQUIPOS CS, CONF_EQUIPOS CE WHERE CS.IDENT = CE.IDENT AND CE.NOMBRE_TIPOEQUIPO = 'CANAL' AND CS.IDENT1 = VCE.IDENT ORDER BY CHANNEL OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY) AND NOMBRE_CARACT = 'SEED') AS PICTO_SEED
             FROM VIEW_CARACTERISTICAS_EQUIPOS VCE, CONF_TIPOS_EQUIPOS CTE
             WHERE VCE.NOMBRE_TIPOEQUIPO = CTE.NOMBRE_TIPOEQUIPO
             AND CTE.ID_TEQUIP_PRINCIPAL = 'CPMV'
@@ -410,12 +421,16 @@ namespace TMCSCheckerWPF
                     rtaCon.MonoPort = reader.GetString(8);
                 if (!reader.IsDBNull(9))
                     rtaCon.MonoRTAPass = reader.GetString(9);
-                if (!reader.IsDBNull(7))
-                    rtaCon.PictoIP = reader.GetString(10);
-                if (!reader.IsDBNull(8))
-                    rtaCon.PictoPort = reader.GetString(11);
-                if (!reader.IsDBNull(9))
-                    rtaCon.PictoRTAPass = reader.GetString(12);
+                if (!reader.IsDBNull(10))
+                    rtaCon.MonoRTASeed = reader.GetString(10);
+                if (!reader.IsDBNull(11))
+                    rtaCon.PictoIP = reader.GetString(11);
+                if (!reader.IsDBNull(12))
+                    rtaCon.PictoPort = reader.GetString(12);
+                if (!reader.IsDBNull(13))
+                    rtaCon.PictoRTAPass = reader.GetString(13);
+                if (!reader.IsDBNull(14))
+                    rtaCon.PictoRTASeed = reader.GetString(14);
 
                 if (string.IsNullOrEmpty(rtaCon.Beacon_Type) || rtaCon.Beacon_Type == "none")
                     rtaCon.Beacon_Type = "N";
@@ -483,6 +498,12 @@ namespace TMCSCheckerWPF
             });
             dgConnections.Columns.Add(new DataGridTextColumn
             {
+                Header = "Mono Seed",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("MonoRTASeed")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
                 Header = "Picto IP",
                 Width = new DataGridLength(1, DataGridLengthUnitType.Star),
                 Binding = new Binding("PictoIP")
@@ -498,6 +519,12 @@ namespace TMCSCheckerWPF
                 Header = "Picto Password",
                 Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
                 Binding = new Binding("PictoRTAPass")
+            });
+            dgConnections.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Picto Seed",
+                Width = new DataGridLength(0.6, DataGridLengthUnitType.Star),
+                Binding = new Binding("PictoRTASeed")
             });
 
             dgConnections.AutoGenerateColumns = false;
@@ -518,7 +545,7 @@ namespace TMCSCheckerWPF
                 gen.Device = reader.GetString(0);
                 if (reader.GetString(1).Equals("GENETEC_ID"))
                     gen.GenID = reader.GetString(2);
-                else if(reader.GetString(1).Equals("CITILOG_ID"))
+                else if (reader.GetString(1).Equals("CITILOG_ID"))
                     gen.CitiID = reader.GetString(2);
                 genetecConnections.Add(gen);
             }
@@ -529,10 +556,10 @@ namespace TMCSCheckerWPF
 
                 dgConnections.Columns.Add(new DataGridTextColumn
                 {
-                    Header = "Genetec ID", 
+                    Header = "Genetec ID",
                     Width = new DataGridLength(1, DataGridLengthUnitType.Star),
                     Binding = new Binding("GenID")
-                }) ;
+                });
             }
             if (genetecConnections.Find(x => !string.IsNullOrEmpty(x.CitiID)) != null)
             {
@@ -552,7 +579,7 @@ namespace TMCSCheckerWPF
         {
             cbDevices.SelectionChanged -= LoadIconsAssociated;
             cbDevices.ItemsSource = null;
-            string queryString = "SELECT IDENT FROM CONF_EQUIPOS WHERE NOMBRE_TIPOEQUIPO = '"+ cbType.SelectedItem.ToString() + "'";
+            string queryString = "SELECT IDENT FROM CONF_EQUIPOS WHERE NOMBRE_TIPOEQUIPO = '" + cbType.SelectedItem.ToString() + "'";
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
             devicesList.Clear();
@@ -562,12 +589,12 @@ namespace TMCSCheckerWPF
                 //MessageBox.Show(reader.GetString(0));
             }
             reader.Close();
-            
+
             cbDevices.ItemsSource = devicesList;
             // cbDevices.SelectionChanged += LoadDevices;
             cbDevices.SelectionChanged += LoadIconsAssociated;
             cbDevices.SelectedIndex = 0;
-            
+
         }
 
 
@@ -577,8 +604,8 @@ namespace TMCSCheckerWPF
             string queryString = @"SELECT NOMBRE_ICONO FROM VIS_LISTA_ICONOS WHERE ID_LISTA IN
                                   (SELECT ID_LISTA FROM VIS_LISTA WHERE NOMBRE_LISTA IN(
                                    SELECT VALOR FROM VIEW_CARACTERISTICAS_EQUIPOS 
-                                   WHERE IDENT = '"+ cbDevices.SelectedItem.ToString() +"'"
-                                  +@" and NOMBRE_CARACT = 'LISTAICONOS'))";
+                                   WHERE IDENT = '" + cbDevices.SelectedItem.ToString() + "'"
+                                  + @" and NOMBRE_CARACT = 'LISTAICONOS'))";
             int count = 0;
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
@@ -587,7 +614,7 @@ namespace TMCSCheckerWPF
 
             gridIcons.Children.Clear();
             gridIcons.Children.Add(b);
-           
+
             bool addImage = true;
             while (reader.Read())
             {
@@ -595,7 +622,8 @@ namespace TMCSCheckerWPF
                 //var bitmap = new BitmapImage(uri);
                 System.Windows.Controls.Image img = new System.Windows.Controls.Image();
                 Label lab = new Label();
-                try {
+                try
+                {
                     using (var fs = new System.IO.FileStream(imagesDir + "icono" + reader.GetString(0) + ".png", System.IO.FileMode.Open))
                     {
                         var bmp = new Bitmap(fs);
@@ -610,12 +638,12 @@ namespace TMCSCheckerWPF
                     img.ToolTip = t;
                     img.MouseRightButtonDown += new MouseButtonEventHandler(SetClipBoardString);
                     img.MouseMove += new MouseEventHandler(OnMouseMoveHandler);
-               
-                    
-                 
+
+
+
                     img.Margin = new System.Windows.Thickness(8);
-                  //  t.con
-                    
+                    //  t.con
+
                 }
                 catch (Exception ex)
                 {
@@ -643,7 +671,7 @@ namespace TMCSCheckerWPF
                     }
                     count++;
                 }
-                
+
                 //MessageBox.Show(reader.GetString(0));
             }
             reader.Close();
@@ -820,7 +848,7 @@ namespace TMCSCheckerWPF
                 picture.NonVisualPictureProperties = nvpp;
                 picture.BlipFill = blipFill;
                 picture.ShapeProperties = sp;
-                
+
 
                 Position pos = new Position();
                 pos.X = x;
@@ -834,12 +862,12 @@ namespace TMCSCheckerWPF
                 anchor.Append(picture);
                 anchor.Append(new ClientData());
                 wsd.Append(anchor);
-                
+
                 wsd.Save(dp);
             }
             catch (Exception ex)
             {
-               // throw ex; // or do something more interesting if you want
+                // throw ex; // or do something more interesting if you want
             }
         }
 
@@ -893,7 +921,7 @@ namespace TMCSCheckerWPF
                     Name = obj.ToString()
                 };
 
-                
+
 
                 //var path = AppDomain.CurrentDomain.BaseDirectory + @"\RESULTS" + cbType.SelectedItem.ToString() + ".csv";
                 // StreamWriter sw = new StreamWriter(path);
@@ -910,7 +938,7 @@ namespace TMCSCheckerWPF
                         }
                         sheetData.Append(rowHeader);
                     }
-                    
+
                     indexCols = 0;
 
 
@@ -923,14 +951,14 @@ namespace TMCSCheckerWPF
                         if (string.IsNullOrEmpty(content))
                             content = "NULL";
                         bool isNumeric = int.TryParse(content, out int n);
-                        if(!isNumeric)
-                            c= new Cell() { CellReference = arrayColumsExcel[indexCols] + (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.String) };
+                        if (!isNumeric)
+                            c = new Cell() { CellReference = arrayColumsExcel[indexCols] + (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.String) };
                         else
-                            c = new Cell() { CellReference = arrayColumsExcel[indexCols] +  (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.Number) };
+                            c = new Cell() { CellReference = arrayColumsExcel[indexCols] + (indexRow + 2), CellValue = new CellValue(content), DataType = new EnumValue<CellValues>(CellValues.Number) };
                         row.Append(c);
                         indexCols++;
-                        
-                        
+
+
 
                     }
                     sheetData.Append(row);
@@ -941,7 +969,7 @@ namespace TMCSCheckerWPF
                     new object[] { (double.Parse(indexRow.ToString()) / double.Parse(dgConnections.Items.Count.ToString())) * 100 }
                      );
 
-      
+
                 }
 
                 sheets.Append(sheet);
@@ -1051,7 +1079,7 @@ namespace TMCSCheckerWPF
 
                 this.Dispatcher.Invoke(
                     new FinishExport(FinishThreadExport),
-                    new object[] {}
+                    new object[] { }
                      );
             }
         }
@@ -1117,14 +1145,12 @@ namespace TMCSCheckerWPF
                             indexCols++;
                         }
                         //writingString += "," + reader.GetString(0);
-                        //InsertImage(worksheetPart.Worksheet, (long)(indexCols * 20 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)9144*100 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
+                        InsertImage(worksheetPart.Worksheet, (long)(indexCols * 16 * 914400 / 72) + (long)(200 * 914400) / 72, (long)(indexRow - 1) * (long)15 * (long)8750 * 100 / (long)72, imagesDir + "icono" + reader.GetString(0) + ".png");
 
                         // Cell c = new Cell() { CellReference = arrayColumsExcel[indexCols] + indexRow, CellValue = new CellValue(reader.GetString(0).ToString()), DataType = new EnumValue<CellValues>(CellValues.String) };
                         // row.Append(c);
 
-                        ExcelTools.AddImage(worksheetPart,
-                                    imagesDir + "icono" + reader.GetString(0) + ".png", "Image description",
-                                    indexCols + 1, indexRow);
+
 
 
                         indexCols++;
@@ -1206,8 +1232,8 @@ namespace TMCSCheckerWPF
             double x = args.GetPosition((sender as FrameworkElement)).X;
             double y = args.GetPosition((sender as FrameworkElement)).Y;
             var tip = ((sender as FrameworkElement).ToolTip as ToolTip);
-            
-            tip.HorizontalOffset = x+15;
+
+            tip.HorizontalOffset = x + 15;
             tip.VerticalOffset = y;
 
 
@@ -1228,7 +1254,7 @@ namespace TMCSCheckerWPF
         }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            
+
             this.Dispatcher.Invoke(
                       new UpdateGUI(this.ClearLog)
                        );
@@ -1238,7 +1264,7 @@ namespace TMCSCheckerWPF
         private void ClearGrid()
         {
             dgConnections.Columns[0].Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-            for (int i = dgConnections.Columns.Count-1; i > 0; i--)
+            for (int i = dgConnections.Columns.Count - 1; i > 0; i--)
             {
 
                 dgConnections.Columns.Remove(dgConnections.Columns[i]);
@@ -1333,6 +1359,7 @@ namespace TMCSCheckerWPF
             headers.Add("IP");
             headers.Add("Port");
             headers.Add("RTAPass");
+            headers.Add("RTASeed");
         }
 
         public string Device { get; set; }
@@ -1345,6 +1372,7 @@ namespace TMCSCheckerWPF
         public string IP { get; set; }
         public string Port { get; set; }
         public string RTAPass { get; set; }
+        public string RTASeed { get; set; }
 
         public override string GetItem(int index)
         {
@@ -1370,6 +1398,8 @@ namespace TMCSCheckerWPF
                     return Port;
                 case 9:
                     return RTAPass;
+                case 10:
+                    return RTASeed;
             }
 
             return null;
@@ -1393,9 +1423,11 @@ namespace TMCSCheckerWPF
             headers.Add("MonoIP");
             headers.Add("MonoPort");
             headers.Add("MonoRTAPass");
+            headers.Add("MonoRTASeed");
             headers.Add("PictoIP");
             headers.Add("PictoPort");
             headers.Add("PictoRTAPass");
+            headers.Add("PictoRTASeed");
         }
 
         public string Device { get; set; }
@@ -1408,9 +1440,11 @@ namespace TMCSCheckerWPF
         public string MonoIP { get; set; }
         public string MonoPort { get; set; }
         public string MonoRTAPass { get; set; }
+        public string MonoRTASeed { get; set; }
         public string PictoIP { get; set; }
         public string PictoPort { get; set; }
         public string PictoRTAPass { get; set; }
+        public string PictoRTASeed { get; set; }
 
         public override string GetItem(int index)
         {
@@ -1438,11 +1472,15 @@ namespace TMCSCheckerWPF
                 case 9:
                     return MonoRTAPass;
                 case 10:
-                    return PictoIP;
+                    return MonoRTASeed;
                 case 11:
-                    return PictoPort;
+                    return PictoIP;
                 case 12:
+                    return PictoPort;
+                case 13:
                     return PictoRTAPass;
+                case 14:
+                    return PictoRTASeed;
             }
 
             return null;
@@ -1450,7 +1488,7 @@ namespace TMCSCheckerWPF
 
     }
 
-    public class IPChannelConnection:Connection
+    public class IPChannelConnection : Connection
     {
         public IPChannelConnection()
         {
@@ -1471,7 +1509,7 @@ namespace TMCSCheckerWPF
                 case 0:
                     return Device;
                 case 1:
-                    return IP;                  
+                    return IP;
                 case 2:
                     return Port;
             }
